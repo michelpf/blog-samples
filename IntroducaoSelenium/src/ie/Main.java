@@ -9,6 +9,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		
 		File file = new File("drivers/IEDriverServer.exe");
 		System.setProperty("webdriver.ie.driver", file.getAbsolutePath());
 		WebDriver driver = new InternetExplorerDriver();

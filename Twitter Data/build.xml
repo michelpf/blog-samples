@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<project name="TwitterData" default="build" basedir=".">
+
+	<!--
+	INIT
+	-->
+	<target name="init">
+		<property name="base.dir" value="${basedir}" />
+		<property name="src.dir" value="${base.dir}" />
+		<property name="lib.dir" value="${base.dir}/lib" />
+		<property name="props.dir" value="${base.dir}/props" />
+		<property name="build.dir" value="${base.dir}/build" />
+		<property name="build.classes.dir" value="${build.dir}" />
+		<property name="dist.dir" value="${base.dir}/dist" />
+		<property name="global.name" value="TwitterData" />
+		<property name="jar.name" value="${global.name}.jar" />
+		
+		<echo message="base.dir = ${basedir}" />
+		<echo message="src.dir = ${src.dir}" />
+		<echo message="lib.dir = ${lib.dir}" />
+		<echo message="props.dir = ${props.dir}" />
+		<echo message="build.dir = ${build.dir}" />
+		<echo message="build.classes.dir = ${build.classes.dir}" />
+		<echo message="dist.dir = ${dist.dir}" />
+		<echo message="global.name = ${global.name}" />
+		<echo message="jar.name = ${jar.name}" />
+	</target>
+
+	<!--
+	PREPARE
+	-->
+	<target name="prepare" depends="init">
+		<deltree dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<deltree dir="${build.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.classes.dir}"/>
+	</target>
+
+	<!--
+	COMPILE
+	-->
+	<property name="java.encoding" value="ascii" />
+	<target name="compile" depends="prepare">
+		<javac encoding="iso-8859-1" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" includes="**/*.java">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!--
+	BUILD
+	-->
+	<target name="build" depends="compile" >
+		<unzip dest="${build.classes.dir}">
+	    	<fileset dir="${lib.dir}" includes="**/*.jar" />
+		    <patternset excludes="**/*manifest*" />
+		</unzip>
+		<jar jarfile="${dist.dir}/${jar.name}" >
+	        <fileset dir="${build.classes.dir}" />
+	        <manifest>
+	        	<attribute name="Main-Class" value="core.Main"/>
+	        </manifest>
+	    </jar>	
+		<copy todir="${dist.dir}">
+			<fileset file="${base.dir}/*.properties" />
+			<fileset file="${base.dir}/*.bat" />
+			<fileset file="${base.dir}/*.html" />
+		</copy>
+	</target>
+	
+	<!--
+	DIST
+	-->
+	<target name="dist" depends="build">
+		<copy todir="${jboss.dir}/server/${jboss.instance}/deploy">
+			<fileset file="${dist.dir}/${war.name}" />
+		</copy>
+	</target>
+
+</project>
